@@ -1,0 +1,174 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "love indie art",
+            "modelConfiguration": {
+                "fallbackIntentSensitivity": {
+                    "level": "LOW"
+                }
+            },
+            "intents": [
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": [
+                        "ok",
+                        "yes"
+                    ]
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": [
+                        "cancel please",
+                        "please cancel",
+                        "cancel"
+                    ]
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "help please",
+                        "help"
+                    ]
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": [
+                        "stop"
+                    ]
+                },
+                {
+                    "name": "AMAZON.PauseIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ResumeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.MoreIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateSettingsIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NextIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageUpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PreviousIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollRightIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollLeftIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollUpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "GetNewArtIntent",
+                    "slots": [],
+                    "samples": [
+                        "next art piece",
+                        "next",
+                        "new art piece",
+                        "get new art piece",
+                        "get a new art piece"
+                    ]
+                },
+                {
+                    "name": "goback",
+                    "slots": [],
+                    "samples": [
+                        "back"
+                    ]
+                },
+                {
+                    "name": "SetupPaymentIntent",
+                    "slots": [],
+                    "samples": [
+                        "donate tp love indie art",
+                        "donate to art",
+                        "amazon pay",
+                        "donate"
+                    ]
+                },
+                {
+                    "name": "BuyTicketIntent",
+                    "slots": [],
+                    "samples": [
+                        "consent for amazon pay",
+                        "consent amazon pay",
+                        "enable amazon pay",
+                        "permission for amazon pay"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "titles",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Art 1"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Can you haer me"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Clear Sky"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Art"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Seasons"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Flowers"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Vase"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
