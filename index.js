@@ -252,8 +252,7 @@ const SetUpHandler = {
             "payload": {
                 "@type": "SetupAmazonPayRequest",
                 "@version": "2",
-                "sellerId": "A2Y7S7VYKO4ZQC",
-               // "MWSAuthToken": "AKIAIRY7PQ2WQGRHJ2SQ",
+                "sellerId": "seller-id",
                 "countryOfEstablishment": "US",
                 "ledgerCurrency": "USD",
                 "checkoutLanguage": "en_US",
@@ -343,8 +342,7 @@ const ConnectionsSetupResponseHandler = {
                                    "payload": {
                                        "@type": "ChargeAmazonPayRequest",
                                        "@version": "2",
-                                       "sellerId": "A2Y7S7VYKO4ZQC",
-                                     //  "MWSAuthToken": "AKIAIRY7PQ2WQGRHJ2SQ",
+                                       "sellerId": "seller-id",
                                        "billingAgreementId": billingAgreementID,
                                        "paymentAction": "AuthorizeAndCapture",
                                        "authorizeAttributes": {
