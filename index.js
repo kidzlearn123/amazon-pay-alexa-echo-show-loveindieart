@@ -408,7 +408,7 @@ const ConnectionsSetupResponseHandler = {
                                if (connectionResponseStatusCode != 200)
                                {
                                    // Perform error handling
-                                   handleErrors(handlerInput)
+                                  return handleErrors(handlerInput)
                                }
                                
                              //   const authorizationStatusState = connectionResponsePayload.authorizationDetails.state;
