@@ -16,14 +16,6 @@
                     ]
                 },
                 {
-                    "name": "AMAZON.CancelIntent",
-                    "samples": [
-                        "cancel please",
-                        "please cancel",
-                        "cancel"
-                    ]
-                },
-                {
                     "name": "AMAZON.HelpIntent",
                     "samples": [
                         "help please",
@@ -100,13 +92,6 @@
                     ]
                 },
                 {
-                    "name": "goback",
-                    "slots": [],
-                    "samples": [
-                        "back"
-                    ]
-                },
-                {
                     "name": "SetupPaymentIntent",
                     "slots": [],
                     "samples": [
@@ -125,6 +110,21 @@
                         "enable amazon pay",
                         "permission for amazon pay"
                     ]
+                },
+                {
+                    "name": "CancelPaymentIntent",
+                    "slots": [],
+                    "samples": [
+                        "cancel my order",
+                        "refund order",
+                        "refund me",
+                        "refund",
+                        "cancel order"
+                    ]
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
                 }
             ],
             "types": [
