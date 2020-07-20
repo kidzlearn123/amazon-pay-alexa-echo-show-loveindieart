@@ -10,7 +10,7 @@ var data = [];
 var body = [];
 var factArr = [];
 const GET_ART_MESSAGE = 'Here\'s an art: ';
-const HELP_MESSAGE = 'You can say show me an art piece, or, say next to get the next art piece or you can say stop to exit. You can say Amazon Pay to pay $25.00 and get an art piece. after you pay you will get an art piece shipped to your address ASAP. If you need a specific art piece e-mail the title number, artist name and your e-mail address to loveindieart@gmail.com to get the printed copy of your art. What can I help you with?';
+const HELP_MESSAGE = 'You can say show me an art piece, or, say next to show the next art piece , or say Amazon Pay to pay for art, or you can say stop to exit. If you need a specific art , e-mail the title number, and your e-mail address to loveindieart@gmail.com to get a printed copy shipped to your address. What can I help you with?';
 const HELP_REPROMPT = 'What can I help you with?';
 const STOP_MESSAGE = 'Goodbye! Live well, eat and sleep well. ';
 
@@ -35,12 +35,12 @@ const LaunchFactHandler = {
         return request.type === 'LaunchRequest' || request.type==='Alexa.Presentation.APL.UserEvent' ;
       },
      handle(handlerInput) {
-        const introtext = "Welcome to Love indie art. You can say 'Show me an art piece' to get a new art by indie developers. You can say 'help' for help. You can also say Amazon pay to donate to Love indie art to help new independent artists. Have a great and wornderful day and keep loving art. ";
+        const introtext = "Welcome to Love indie art. You can say 'Show me an art piece' to get a new art by indie developers. You can say 'help' for help. You can also say Amazon pay to buy Love indie art by making a one time payment of $25.00 to get a print copy of art shipped. Keep smiling and continue loving art. ";
            
          if (supportsAPL(handlerInput))
             {
                  return handlerInput.responseBuilder
-                   .speak("Welcome to Love indie art. You can say 'Show me an art piece' to get a new art by indie developers. You can say 'help' for help. You can also say Amazon pay to donate to Love indie art to help new independent artists. Have a great and wornderful day and keep loving art. ")
+                   .speak("Welcome to Love indie Art. You can say 'Show me an art piece' to get a new art by indie developers. You can say 'help' for help. You can also say Amazon pay to buy Love indie art by making a one time payment of $25.00 to get a print copy of art shipped. Keep smiling and continue loving art. ")
                    .withSimpleCard('Love indipendent artists', introtext)
                    .addDirective({
                              type: 'Alexa.Presentation.APL.RenderDocument',
@@ -55,6 +55,7 @@ const LaunchFactHandler = {
                                },
                              },
                            })
+                    .withShouldEndSession(false)
                    .getResponse();
             }
             else{
@@ -62,6 +63,7 @@ const LaunchFactHandler = {
                      .speak(introtext)
                      .reprompt("say 'get a Love indie Art' or say help")
                      .withSimpleCard(SKILL_NAME,introtext)
+                     .withShouldEndSession(false)
                      .getResponse();
                 
                }
@@ -76,9 +78,15 @@ const GetNewArtHandler = {
   },
   handle(handlerInput) {
          factIndex = factIndex + 1
-      
+    
+    url = s3.getSignedUrl('getObject', {
+         Bucket: 'awarenessmusic',
+         Key: 'art'+(factIndex - 1)+'.png',
+        // Expires: signedUrlExpireSeconds
+     })
+    
       s3.getObject(
-              { Bucket: 'loveindieart', Key: 'artists'+factIndex.toString()},
+              { Bucket: 'loveindieart', Key: 'artists'+(factIndex - 1).toString()},
               function(err, data1) {
                 if (!err) {
                     console.log("key",'art/artists'+factIndex.toString())
@@ -95,15 +103,25 @@ const GetNewArtHandler = {
                console.log("speech in",speechOutput,factIndex)
             }); // s3
    // const responseBuilder = handlerInput.responseBuilder;
-      if (speechOutput1 != "")
+         if (speechOutput1 != "")
       {
-      speechOutput = "Title Number" + " " + (factIndex - 1) + ". " + speechOutput1;
+          if ((factIndex - 1) == 0)
+          {
+              speechOutput = speechOutput1
+              speechOutput3 = speechOutput
+          }
+          else
+          {
+              speechOutput = "Title Number" + " " + (factIndex - 1) + ". " + speechOutput1;
+              speechOutput3 = "";
+          }
        // factIndex1 = factIndex;
       }
       else
       {
          
-              speechOutput =  "Once you make a payment via Amazon Pay, we will send you an art piece. If you prefer a specific art piece, please indicate the title number, the artist name and your Amazon Pay account e-mail address to loveindieart@gmail.com. You will get your requested print shipped as soon as possible. Let's begin..say 'next' to look at the art pieces. "
+              speechOutput =  "Once you make a fixed payment of $25.00 via Amazon Pay, we will send you an art piece. If you prefer a specific art piece, please send the title number, the artist name and your Amazon Pay account e-mail address to loveindieart@gmail.com. You will get your requested print shipped as soon as possible. Let's begin..say 'next' to look at the art pieces. ";
+            speechOutput3 = speechOutput
          // factIndex1 = factIndex - 1;
       }
         console.log("speech",speechOutput1,factIndex)
@@ -111,7 +129,7 @@ const GetNewArtHandler = {
       {
           return handlerInput.responseBuilder
           .speak(speechOutput)
-          .withSimpleCard('Love indie Art', speechOutput)
+          .withSimpleCard('Love indie Art', speechOutput3)
           .addDirective({
                         type: 'Alexa.Presentation.APL.RenderDocument',
                         version: '1.0',
@@ -119,9 +137,9 @@ const GetNewArtHandler = {
                         datasources: {
                         response: {
                        
-                        text: speechOutput,
+                        text: speechOutput3,
                         title: "Love indie Art",
-                        url:"https://awarenessmusic.s3.amazonaws.com/art/art" + (factIndex - 1).toString() + ".png" ,
+                        url: url,
                         logo:"https://awarenessmusic.s3.amazonaws.com/kidzlearnapps.png"
                         },
                         },
@@ -130,9 +148,9 @@ const GetNewArtHandler = {
       }
     else{
                    return handlerInput.responseBuilder
-                        .speak(speechOutput + "Say next for the next art or say stop. ")
+                        .speak(speechOutput3 + "Say next for the next art or say stop. ")
                         .reprompt("Say next for the next art or say stop. ")
-                        .withSimpleCard(SKILL_NAME,speechOutput + "Say next for the next art or say stop. ")
+                        .withSimpleCard(SKILL_NAME,speechOutput3 + "Say next for the next art or say stop. ")
                         .getResponse();
                    
                   }
@@ -167,7 +185,7 @@ const HelpHandler = {
              response: {
                text: HELP_MESSAGE,
                title: "",
-               url:"https://awarenessmusic.s3.amazonaws.com/art/art.png" ,
+               url:"https://awarenessmusic.s3.amazonaws.com/art/art0.png" ,
                logo:"https://awarenessmusic.s3.amazonaws.com/kidzlearnapps.png"
              },
            },
@@ -233,13 +251,85 @@ function generateRandomString(length) {
 }
 
 
-function handleErrors(statusCode, handlerInput ) {
+function handleErrors( handlerInput ) {
+    let   errorMessage                     = '';
+    let   permissionsError                 = false;
+    const actionResponseStatusCode         = handlerInput.requestEnvelope.request.status.code;
+    const actionResponseStatusMessage      = handlerInput.requestEnvelope.request.status.message;
+    const actionResponsePayloadMessage     = handlerInput.requestEnvelope.request.payload.errorMessage;
 
-      return handlerInput.responseBuilder
-            .speak(" Please enable permission for Amazon Pay in your companion app. After enabling say 'Amazon Pay' for payment or say 'next' to continue seeing art or say 'stop' to exit. ")
-            .getResponse();
-  
+    switch ( actionResponseStatusMessage ) {
+        // Permissions errors - These must be resolved before a user can use Amazon Pay
+        case 'ACCESS_DENIED':
+        case 'ACCESS_NOT_REQUESTED':  // Amazon Pay permissions not enabled
+        case 'MissingPermissionsToAccessResource':
+        case 'FORBIDDEN':
+        case 'VoicePurchaseNotEnabled':     // Voice Purchase not enabled     TODO: Add this to documentation
+            permissionsError     = true;
+            errorMessage         = 'To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, a card has been sent to your Alexa app.';
+            break;
+
+        // Integration errors - These must be resolved before Amazon Pay can run
+        case 'BuyerEqualsSeller':
+        case 'ReleaseEnvironmentNotAllowed':
+        case 'InvalidBillingAgreementType':
+        case  'InvalidSubscriptionAmount':
+        case 'InvalidParameterValue':
+        case 'InvalidSandboxCustomerEmail':
+        case 'InvalidSellerId':
+        case 'MissingSkillManifestData':
+        case 'UnauthorizedAccess':
+        case 'UnsupportedCountryOfEstablishment':
+        case 'UnsupportedCurrency':
+
+        // Runtime errors - These must be resolved before a charge action can occur
+        case 'DuplicateRequest':
+        case 'InternalServerError':
+        case 'InvalidAuthorizationAmount':
+        case 'InvalidBillingAgreementId':
+        case 'InvalidBillingAgreementStatus':
+        case 'InvalidPaymentAction':
+        case 'PeriodicAmountExceeded':
+        case 'ProviderNotAuthorized':
+        case 'ServiceUnavailable':
+        //    errorMessage = `There was an error. ${actionResponseStatusCode} ${actionResponseStatusMessage} ${actionResponsePayloadMessage} Love indie Art sent a card requesting permission. Please enable Amazon Pay permission in Alexa app. `;
+          //  permissionsError     = true;
+            errorMessage = ` ${actionResponseStatusMessage} ${actionResponsePayloadMessage} `;
+                            
+            break;
+
+        default:
+            errorMessage = " ";
+            break;
+    }
+
+    debug( handlerInput );
+
+    // If it is a permissions error send a permission consent card to the user, otherwise .speak() error to resolve during testing
+    if ( permissionsError ) {
+       
+      
+        
+        return handlerInput.responseBuilder
+            .speak( errorMessage )
+            .withShouldEndSession(false)
+            .withAskForPermissionsConsentCard("Love Indie Art requests permission for Amazon Pay. ")
+            .getResponse( );
+       
+    }
+        
+       else
+       {
+        
+            return handlerInput.responseBuilder
+            .speak( errorMessage )
+             .withShouldEndSession(true)
+            .getResponse( );
+       }
+    
 }
+
+
 const SetUpHandler = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === "IntentRequest" &&
@@ -252,7 +342,7 @@ const SetUpHandler = {
             "payload": {
                 "@type": "SetupAmazonPayRequest",
                 "@version": "2",
-                "sellerId": "seller-id",
+                "sellerId": "seller-id",  // Input the Amazon seller-id
                 "countryOfEstablishment": "US",
                 "ledgerCurrency": "USD",
                 "checkoutLanguage": "en_US",
@@ -298,13 +388,10 @@ const ConnectionsSetupResponseHandler = {
                                
                              console.log("connectionResponsePayload",connectionResponsePayload)
                               console.log("connectionResponseStatusCode",connectionResponseStatusCode)
-                            if (connectionResponseStatusCode == 400) {
-                                                                                        // Perform error handling
-                                    handleErrors1(connectionResponseStatusCode,handlerInput)
-                            }
-                               if (connectionResponseStatusCode != 200) {
+                            
+                               if ((handlerInput.requestEnvelope.request.status.code) != 200) {
                                    // Perform error handling
-                                   handleErrors(connectionResponseStatusCode,handlerInput)
+                                 return  handleErrors(connectionResponseStatusCode,handlerInput)
                                }
                                // Extract billingAgreementDetails and billingAgreementID from payload optionally to store it for future use
                               
@@ -482,9 +569,61 @@ const BuyTicketIntentStartedHandler = {
       return handlerInput.responseBuilder
           .speak('Please enable permission for Amazon Pay in your companion app.')
           .withAskForPermissionsConsentCard([ 'payments:autopay_consent' ])
+          .withShouldEndSession( false )
           .getResponse();
       }
+      else if(amazonPayPermission.status === "GRANTED")
+      {
+          return handlerInput.responseBuilder
+                   .speak('Amazon Pay is already enabled. In order to make a payment say amazon pay. ')
+                //   .withAskForPermissionsConsentCard([ 'payments:autopay_consent' ])
+                   .withShouldEndSession( false )
+                   .getResponse();
+      }
   }
+}
+
+const CancelRefundHandler = {
+    canHandle(handlerInput) {
+       const request = handlerInput.requestEnvelope.request;
+       return request.type === 'IntentRequest'
+         && (request.intent.name === 'CancelPaymentIntent' || request.type==='Alexa.Presentation.APL.UserEvent');
+     },
+     handle(handlerInput) {
+       if(supportsAPL(handlerInput))
+       {
+       factIndex = 0;
+       return handlerInput.responseBuilder
+         .speak("To request a refund, please e-mail loveindieart@gmail.coom with your amazon pay e-mail and your address. ")
+         .withSimpleCard('Love indie Art', "To request a refund, please e-mail loveindieart@gmail.coom with your amazon pay e-mail and your address. ")
+         .addDirective({
+                   type: 'Alexa.Presentation.APL.RenderDocument',
+                   version: '1.0',
+                   document: myDocument,
+                   datasources: {
+                     response: {
+                       text: "To request a refund, please e-mail loveindieart@gmail.coom with your amazon pay e-mail and your address. ",
+                       title: "Love indie Art",
+                       url:"https://awarenessmusic.s3.amazonaws.com/art/art.png" ,
+                       logo:"https://loveindieart.s3.amazonaws.com/kidzlearnapps.png"
+                     },
+                   },
+                 })
+          .withShouldEndSession(true)
+         .getResponse();
+       }  // if supports APL
+             
+       else
+       {
+           factIndex = 0;
+           return handlerInput.responseBuilder
+                .speak("To request a refund, please e-mail loveindieart@gmail.coom with your amazon pay e-mail and your address. ")
+                .withSimpleCard(SKILL_NAME, "To request a refund, please e-mail loveindieart@gmail.coom with your amazon pay e-mail and your address. ")
+                .withShouldEndSession(true)
+                .getResponse();
+                      
+       }
+     },
 }
 
 const ExitHandler = {
@@ -575,65 +714,6 @@ const ErrorHandler = {
 };
 
 
-function handleErrors( handlerInput ) {
-    let   errorMessage                     = '';
-    let   permissionsError                 = false;
-    const actionResponseStatusCode         = handlerInput.requestEnvelope.request.status.code;
-    const actionResponseStatusMessage      = handlerInput.requestEnvelope.request.status.message;
-    const actionResponsePayloadMessage     = handlerInput.requestEnvelope.request.payload.errorMessage;
-
-    switch ( actionResponseStatusMessage ) {
-        // Permissions errors - These must be resolved before a user can use Amazon Pay
-        case 'ACCESS_DENIED':
-        case 'ACCESS_NOT_REQUESTED':         // Amazon Pay permissions not enabled
-        case 'FORBIDDEN':
-        case 'VoicePurchaseNotEnabled':     // Voice Purchase not enabled     TODO: Add this to documentation
-            permissionsError     = true;
-            errorMessage         = 'To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app.';
-            break;
-
-        // Integration errors - These must be resolved before Amazon Pay can run
-        case 'BuyerEqualsSeller':
-        case 'InvalidParameterValue':
-        case 'InvalidSandboxCustomerEmail':
-        case 'InvalidSellerId':
-        case 'UnauthorizedAccess':
-        case 'UnsupportedCountryOfEstablishment':
-        case 'UnsupportedCurrency':
-
-        // Runtime errors - These must be resolved before a charge action can occur
-        case 'DuplicateRequest':
-        case 'InternalServerError':
-        case 'InvalidAuthorizationAmount':
-        case 'InvalidBillingAgreementId':
-        case 'InvalidBillingAgreementStatus':
-        case 'InvalidPaymentAction':
-        case 'PeriodicAmountExceeded':
-        case 'ProviderNotAuthorized':
-        case 'ServiceUnavailable':
-            errorMessage = `There was an error. ${actionResponseStatusCode} ${actionResponseStatusMessage} ${actionResponsePayloadMessage}`;
-                            
-            break;
-
-        default:
-            errorMessage = "Unknown error";
-            break;
-    }
-
-    debug( handlerInput );
-
-    // If it is a permissions error send a permission consent card to the user, otherwise .speak() error to resolve during testing
-    if ( permissionsError ) {
-        return handlerInput.responseBuilder
-            .speak( errorMessage )
-            .withAskForPermissionsConsentCard("Permission request for Amazon Pay")
-            .getResponse( );
-    } else {
-        return handlerInput.responseBuilder
-            .speak( errorMessage )
-            .getResponse( );
-    }
-}
 
 // If billing agreement equals any of these states, you need to get the user to update their payment method
 // Once payment method is updated, billing agreement state will go back to OPEN and you can charge the payment method
@@ -661,23 +741,28 @@ function handleBillingAgreementState( billingAgreementStatus, handlerInput ) {
 // and allow customer to resume session. This is just a simple message to tell the user their order was not placed.
 function handleAuthorizationDeclines( authorizationStatusReasonCode, handlerInput ) {
     let errorMessage = '';
-
+    let permissionerrorr1 = false
     switch ( authorizationStatusReasonCode ) {
         case 'AmazonRejected':
         case 'InvalidPaymentMethod':
+          //  permissionerrorr1 = true
+            errorMessage = "Your payment did not go through. Your 1-Click payment method needs updating. To help, Love indie Art sent a link to your Alexa app. ";
+            break;
         case 'ProcessingFailure':
         case 'TransactionTimedOut':
-            errorMessage = "Your payment did notgo through. Try again later. ";
+            errorMessage = "Sorry. Your payment can't be completed right now, but you can try later. Try again later. ";
             break;
         default:
             errorMessage = "Unknown error occured. ";
     }
 
     debug( handlerInput );
-    
+  
     return handlerInput.responseBuilder
         .speak( errorMessage )
+        .withShouldEndSession(true)
         .getResponse( );
+    
 }
 
 // Output object to console for debugging purposes
@@ -697,11 +782,13 @@ exports.handler = skillBuilder
     LaunchFactHandler,
     GetNewArtHandler,
     SetUpHandler,
+    CancelRefundHandler,
     ConnectionsSetupResponseHandler,
     ConnectionsChargeResponseHandler,
     HelpHandler,
     BuyTicketIntentStartedHandler,
     ExitHandler,
+    gobackhandler,
     SessionEndedRequestHandler
   )
   .addErrorHandlers(ErrorHandler)
